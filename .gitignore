@@ -32,3 +32,7 @@ build/
 
 ### VS Code ###
 .vscode/
+# Vaadin & Frontend
+/frontend/generated/
+/node_modules/
+/target/
