@@ -3,3 +3,5 @@
 src/main/frontend/* linguist-vendored
 *.js linguist-vendored
 *.ts linguist-vendored
+*.css linguist-vendored
+*html linguist-vendored 
