@@ -3,19 +3,19 @@ package com.restaurante.model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+// Una reserva de una mesa para una fecha y hora.
 public class Reserva {
-    private String id;
-    private String cliente;
-    private String telefono;
-    private LocalDate fecha;
-    private LocalTime hora;
-    private int personas;
-    private int numeroMesa;
-    private boolean confirmada;
+    public int id;
+    public String cliente;
+    public String telefono;
+    public LocalDate fecha;
+    public LocalTime hora;
+    public int personas;
+    public int numeroMesa;
+    public boolean confirmada; // false = pendiente, true = confirmada
 
-    public Reserva() {}
-
-    public Reserva(String id, String cliente, String telefono, LocalDate fecha, LocalTime hora, int personas, int numeroMesa, boolean confirmada) {
+    public Reserva(int id, String cliente, String telefono, LocalDate fecha, LocalTime hora,
+                   int personas, int numeroMesa, boolean confirmada) {
         this.id = id;
         this.cliente = cliente;
         this.telefono = telefono;
@@ -26,40 +26,24 @@ public class Reserva {
         this.confirmada = confirmada;
     }
 
-    // Convierte el objeto a formato TXT separado por |
+    // Convierte la reserva en una línea de texto para guardarla en el archivo
+    // Ejemplo: 1|Ana Gómez|3001234567|2026-10-27|19:00|4|3|true
     public String toTxt() {
-        return id + "|" + cliente + "|" + telefono + "|" + fecha + "|" + hora + "|" + personas + "|" + numeroMesa + "|" + confirmada;
+        return id + "|" + cliente + "|" + telefono + "|" + fecha + "|" + hora + "|"
+                + personas + "|" + numeroMesa + "|" + confirmada;
     }
 
-    // Crea el objeto desde una línea del archivo TXT
+    // Hace lo contrario: recibe una línea del archivo y crea la reserva
     public static Reserva fromTxt(String linea) {
-        String[] p = linea.split("\\|");
-        return new Reserva(
-            p[0],
-            p[1],
-            p[2],
-            LocalDate.parse(p[3]),
-            LocalTime.parse(p[4]),
-            Integer.parseInt(p[5]),
-            Integer.parseInt(p[6]),
-            Boolean.parseBoolean(p[7])
-        );
+        String[] partes = linea.split("\\|");
+        int id = Integer.parseInt(partes[0]);
+        String cliente = partes[1];
+        String telefono = partes[2];
+        LocalDate fecha = LocalDate.parse(partes[3]);  // "2026-10-27" -> fecha
+        LocalTime hora = LocalTime.parse(partes[4]);   // "19:00" -> hora
+        int personas = Integer.parseInt(partes[5]);
+        int numeroMesa = Integer.parseInt(partes[6]);
+        boolean confirmada = Boolean.parseBoolean(partes[7]);
+        return new Reserva(id, cliente, telefono, fecha, hora, personas, numeroMesa, confirmada);
     }
-
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-    public String getCliente() { return cliente; }
-    public void setCliente(String cliente) { this.cliente = cliente; }
-    public String getTelefono() { return telefono; }
-    public void setTelefono(String telefono) { this.telefono = telefono; }
-    public LocalDate getFecha() { return fecha; }
-    public void setFecha(LocalDate fecha) { this.fecha = fecha; }
-    public LocalTime getHora() { return hora; }
-    public void setHora(LocalTime hora) { this.hora = hora; }
-    public int getPersonas() { return personas; }
-    public void setPersonas(int personas) { this.personas = personas; }
-    public int getNumeroMesa() { return numeroMesa; }
-    public void setNumeroMesa(int numeroMesa) { this.numeroMesa = numeroMesa; }
-    public boolean isConfirmada() { return confirmada; }
-    public void setConfirmada(boolean confirmada) { this.confirmada = confirmada; }
 }

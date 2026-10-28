@@ -1,13 +1,13 @@
 package com.restaurante.model;
 
+// Una mesa del restaurante.
+// Es el "molde" con el que se crea cada mesa (como la clase Celda del Buscaminas).
 public class Mesa {
-    private int numero;
-    private int capacidad;
-    private String zona; // "Salón" o "Terraza"
-    private int fila;
-    private int columna;
-
-    public Mesa() {}
+    public int numero;
+    public int capacidad;
+    public String zona; // "Salón" o "Terraza"
+    public int fila;    // posición en el plano
+    public int columna;
 
     public Mesa(int numero, int capacidad, String zona, int fila, int columna) {
         this.numero = numero;
@@ -17,31 +17,20 @@ public class Mesa {
         this.columna = columna;
     }
 
-    // Convierte el objeto a formato TXT separado por |
+    // Convierte la mesa en una línea de texto para guardarla en el archivo
+    // Ejemplo: 3|4|Salón|0|2
     public String toTxt() {
         return numero + "|" + capacidad + "|" + zona + "|" + fila + "|" + columna;
     }
 
-    // Crea el objeto desde una línea del archivo TXT
+    // Hace lo contrario: recibe una línea del archivo y crea la mesa
     public static Mesa fromTxt(String linea) {
-        String[] p = linea.split("\\|");
-        return new Mesa(
-            Integer.parseInt(p[0]),
-            Integer.parseInt(p[1]),
-            p[2],
-            Integer.parseInt(p[3]),
-            Integer.parseInt(p[4])
-        );
+        String[] partes = linea.split("\\|");
+        int numero = Integer.parseInt(partes[0]);
+        int capacidad = Integer.parseInt(partes[1]);
+        String zona = partes[2];
+        int fila = Integer.parseInt(partes[3]);
+        int columna = Integer.parseInt(partes[4]);
+        return new Mesa(numero, capacidad, zona, fila, columna);
     }
-
-    public int getNumero() { return numero; }
-    public void setNumero(int numero) { this.numero = numero; }
-    public int getCapacidad() { return capacidad; }
-    public void setCapacidad(int capacidad) { this.capacidad = capacidad; }
-    public String getZona() { return zona; }
-    public void setZona(String zona) { this.zona = zona; }
-    public int getFila() { return fila; }
-    public void setFila(int fila) { this.fila = fila; }
-    public int getColumna() { return columna; }
-    public void setColumna(int columna) { this.columna = columna; }
 }
