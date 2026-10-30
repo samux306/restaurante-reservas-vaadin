@@ -5,6 +5,10 @@ import java.time.LocalTime;
 
 // Clase para guardar los datos de cada reserva
 public class Reserva {
+    // Horario del restaurante
+    public static final LocalTime HORA_APERTURA = LocalTime.of(12, 0);
+    public static final LocalTime HORA_CIERRE = LocalTime.of(22, 0);
+
     public int id = 0;
     public String cliente = "";
     public String telefono = "";
