@@ -2,6 +2,11 @@ package com.restaurante.model;
 
 // Clase para guardar los datos de cada mesa
 public class Mesa {
+    // Limites del plano y de las mesas
+    public static final int MAX_FILAS = 5;
+    public static final int MAX_COLUMNAS = 5;
+    public static final int MAX_CAPACIDAD = 12;
+
     public int numero = 0;
     public int capacidad = 0;
     public String zona = "";

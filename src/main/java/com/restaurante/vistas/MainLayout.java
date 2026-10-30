@@ -5,6 +5,7 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 // Layout con el menu que comparten todas las vistas
@@ -17,10 +18,15 @@ public class MainLayout extends AppLayout {
         addToNavbar(botonMenu, titulo);
 
         // Menu de la izquierda
-        Button btnInicio = new Button("Inicio", e -> UI.getCurrent().navigate(InicioView.class));
+        Button btnInicio = new Button("Inicio", VaadinIcon.HOME.create(),
+                e -> UI.getCurrent().navigate(InicioView.class));
         btnInicio.setWidthFull();
 
-        VerticalLayout menu = new VerticalLayout(btnInicio);
+        Button btnMesas = new Button("Mesas", VaadinIcon.TABLE.create(),
+                e -> UI.getCurrent().navigate(MesasView.class));
+        btnMesas.setWidthFull();
+
+        VerticalLayout menu = new VerticalLayout(btnInicio, btnMesas);
         addToDrawer(menu);
     }
 }
