@@ -5,6 +5,7 @@ import com.restaurante.model.Mesa;
 import com.restaurante.model.Reserva;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -16,6 +17,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -24,7 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
-// Vista para ver, crear y editar reservas
+// Vista para ver, buscar, crear, editar, confirmar y cancelar reservas
 @Route(value = "reservas", layout = MainLayout.class)
 @PageTitle("Reservas")
 public class ReservasView extends VerticalLayout {
@@ -32,6 +34,8 @@ public class ReservasView extends VerticalLayout {
     public ArrayList<Reserva> reservas;
     public ArrayList<Mesa> mesas;
     public Grid<Reserva> grid = new Grid<>();
+    public TextField txtBuscar = new TextField();
+    public ComboBox<String> cmbEstado = new ComboBox<>();
 
     public ReservasView() {
         reservas = GestorArchivos.leerReservas();
@@ -40,8 +44,22 @@ public class ReservasView extends VerticalLayout {
         H2 titulo = new H2("Reservas");
         Button btnNueva = new Button("Nueva reserva", VaadinIcon.PLUS.create(), e -> abrirFormulario(null));
 
+        // Buscador: filtra cada vez que se escribe una letra
+        txtBuscar.setPlaceholder("Buscar por cliente o teléfono");
+        txtBuscar.setPrefixComponent(VaadinIcon.SEARCH.create());
+        txtBuscar.setValueChangeMode(ValueChangeMode.EAGER);
+        txtBuscar.addValueChangeListener(e -> actualizarGrid());
+
+        // Filtro por estado
+        cmbEstado.setItems("Todas", "Pendientes", "Confirmadas");
+        cmbEstado.setValue("Todas");
+        cmbEstado.addValueChangeListener(e -> actualizarGrid());
+
+        HorizontalLayout barra = new HorizontalLayout(btnNueva, txtBuscar, cmbEstado);
+
         // Columnas de la tabla
         grid.addColumn(reserva -> reserva.cliente).setHeader("Cliente");
+        grid.addColumn(reserva -> textoFrecuente(reserva)).setHeader("Frecuente");
         grid.addColumn(reserva -> reserva.telefono).setHeader("Teléfono");
         grid.addColumn(reserva -> reserva.fecha).setHeader("Fecha");
         grid.addColumn(reserva -> reserva.hora).setHeader("Hora");
@@ -50,13 +68,31 @@ public class ReservasView extends VerticalLayout {
         grid.addColumn(reserva -> textoEstado(reserva)).setHeader("Estado");
         grid.addComponentColumn(reserva -> crearBotones(reserva)).setHeader("Acciones");
 
-        add(titulo, btnNueva, grid);
+        add(titulo, barra, grid);
         actualizarGrid();
     }
 
-    // Vuelve a cargar las reservas en la tabla
+    // Muestra en la tabla solo las reservas que cumplen la busqueda y el filtro
     public void actualizarGrid() {
-        grid.setItems(reservas);
+        String texto = txtBuscar.getValue().trim().toLowerCase();
+        String estado = cmbEstado.getValue();
+
+        ArrayList<Reserva> filtradas = new ArrayList<>();
+        for (Reserva reserva : reservas) {
+            // Busqueda: el nombre o el telefono deben contener lo escrito
+            if (!reserva.cliente.toLowerCase().contains(texto) && !reserva.telefono.contains(texto)) {
+                continue;
+            }
+            // Filtro por estado
+            if ("Pendientes".equals(estado) && reserva.confirmada) {
+                continue;
+            }
+            if ("Confirmadas".equals(estado) && !reserva.confirmada) {
+                continue;
+            }
+            filtradas.add(reserva);
+        }
+        grid.setItems(filtradas);
     }
 
     public String textoEstado(Reserva reserva) {
@@ -67,10 +103,66 @@ public class ReservasView extends VerticalLayout {
         }
     }
 
+    public String textoFrecuente(Reserva reserva) {
+        if (esClienteFrecuente(reserva.telefono)) {
+            return "⭐ Sí";
+        } else {
+            return "";
+        }
+    }
+
+    // Un cliente es frecuente si tiene 3 o mas reservas (se identifica por el telefono)
+    public boolean esClienteFrecuente(String telefono) {
+        int contador = 0;
+        for (Reserva reserva : reservas) {
+            if (reserva.telefono.equals(telefono)) {
+                contador++;
+            }
+        }
+        return contador >= 3;
+    }
+
     // Botones de cada fila
     public HorizontalLayout crearBotones(Reserva reserva) {
+        Button btnConfirmar = new Button(VaadinIcon.CHECK.create(), e -> confirmarReserva(reserva));
+        btnConfirmar.getStyle().set("color", "green");
+        btnConfirmar.setEnabled(!reserva.confirmada); // si ya esta confirmada no se puede volver a confirmar
+
         Button btnEditar = new Button(VaadinIcon.EDIT.create(), e -> abrirFormulario(reserva));
-        return new HorizontalLayout(btnEditar);
+
+        Button btnCancelar = new Button(VaadinIcon.TRASH.create(), e -> preguntarCancelar(reserva));
+        btnCancelar.getStyle().set("color", "red");
+
+        return new HorizontalLayout(btnConfirmar, btnEditar, btnCancelar);
+    }
+
+    // Pasa la reserva de pendiente a confirmada
+    public void confirmarReserva(Reserva reserva) {
+        reserva.confirmada = true;
+        GestorArchivos.guardarReservas(reservas);
+        actualizarGrid();
+        Notification.show("Reserva de " + reserva.cliente + " confirmada");
+    }
+
+    // Pregunta antes de cancelar la reserva
+    public void preguntarCancelar(Reserva reserva) {
+        ConfirmDialog confirmar = new ConfirmDialog();
+        confirmar.setHeader("¿Cancelar la reserva?");
+        confirmar.setText(reserva.cliente + " - " + reserva.fecha + " a las " + reserva.hora
+                + " en la mesa " + reserva.numeroMesa + ". La reserva se va a eliminar.");
+        confirmar.setCancelable(true);
+        confirmar.setCancelText("No");
+        confirmar.setConfirmText("Sí, cancelar");
+        confirmar.addConfirmListener(e -> cancelarReserva(reserva));
+        confirmar.open();
+    }
+
+    // Quita la reserva de la lista y guarda el archivo
+    public void cancelarReserva(Reserva reserva) {
+        reservas.remove(reserva);
+        GestorArchivos.guardarReservas(reservas);
+        actualizarGrid();
+        Notification.show("Reserva de " + reserva.cliente + " cancelada");
     }
 
     // Abre el formulario. Si reserva es null es nueva, si no se edita esa reserva
