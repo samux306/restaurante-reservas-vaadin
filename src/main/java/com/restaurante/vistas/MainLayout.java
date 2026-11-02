@@ -34,7 +34,11 @@ public class MainLayout extends AppLayout {
                 e -> UI.getCurrent().navigate(PlanoView.class));
         btnPlano.setWidthFull();
 
-        VerticalLayout menu = new VerticalLayout(btnInicio, btnMesas, btnReservas, btnPlano);
+        Button btnOcupacion = new Button("Ocupación", VaadinIcon.CHART.create(),
+                e -> UI.getCurrent().navigate(OcupacionView.class));
+        btnOcupacion.setWidthFull();
+
+        VerticalLayout menu = new VerticalLayout(btnInicio, btnMesas, btnReservas, btnPlano, btnOcupacion);
         addToDrawer(menu);
     }
 }
