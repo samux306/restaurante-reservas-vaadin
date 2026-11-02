@@ -30,7 +30,11 @@ public class MainLayout extends AppLayout {
                 e -> UI.getCurrent().navigate(ReservasView.class));
         btnReservas.setWidthFull();
 
-        VerticalLayout menu = new VerticalLayout(btnInicio, btnMesas, btnReservas);
+        Button btnPlano = new Button("Plano", VaadinIcon.GRID_BIG.create(),
+                e -> UI.getCurrent().navigate(PlanoView.class));
+        btnPlano.setWidthFull();
+
+        VerticalLayout menu = new VerticalLayout(btnInicio, btnMesas, btnReservas, btnPlano);
         addToDrawer(menu);
     }
 }
