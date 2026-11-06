@@ -4,6 +4,7 @@ import com.restaurante.datos.GestorArchivos;
 import com.restaurante.model.Mesa;
 import com.restaurante.model.Reserva;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -33,6 +34,7 @@ public class MesasView extends VerticalLayout {
 
         H2 titulo = new H2("Mesas");
         Button btnNueva = new Button("Nueva mesa", VaadinIcon.PLUS.create(), e -> abrirFormulario(null));
+        btnNueva.addThemeVariants(ButtonVariant.PRIMARY); // boton principal resaltado
 
         // Columnas de la tabla
         grid.addColumn(mesa -> mesa.numero).setHeader("Número");
@@ -41,6 +43,7 @@ public class MesasView extends VerticalLayout {
         grid.addColumn(mesa -> mesa.fila).setHeader("Fila");
         grid.addColumn(mesa -> mesa.columna).setHeader("Columna");
         grid.addComponentColumn(mesa -> crearBotones(mesa)).setHeader("Acciones");
+        grid.setAllRowsVisible(true); // la tabla crece con las filas en vez de tener su propia barra
 
         add(titulo, btnNueva, grid);
         actualizarGrid();
@@ -93,6 +96,7 @@ public class MesasView extends VerticalLayout {
                 dialogo.close();
             }
         });
+        btnGuardar.addThemeVariants(ButtonVariant.PRIMARY);
         dialogo.getFooter().add(btnCancelar, btnGuardar);
         dialogo.open();
     }

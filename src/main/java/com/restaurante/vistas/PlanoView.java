@@ -50,6 +50,7 @@ public class PlanoView extends VerticalLayout {
         tpHora.addValueChangeListener(e -> dibujarPlano());
 
         HorizontalLayout controles = new HorizontalLayout(dpFecha, tpHora);
+        controles.getStyle().set("flex-wrap", "wrap"); // en el celular bajan a la siguiente linea
         Paragraph leyenda = new Paragraph("🟩 Libre    🟥 Reservada    (toque una mesa para ver sus reservas del día)");
 
         planoLayout.setPadding(false);
@@ -90,9 +91,10 @@ public class PlanoView extends VerticalLayout {
                 boton.getStyle().set("margin", "3px");
 
                 if (mesa == null) {
-                    // Posicion vacia: boton gris sin texto y desactivado
+                    // Posicion vacia: espacio libre del restaurante, sin texto y desactivado
                     boton.setEnabled(false);
-                    boton.getStyle().set("background-color", "#eeeeee");
+                    boton.getStyle().set("background-color", "transparent");
+                    boton.getStyle().set("border", "1px dashed #cccccc");
                 } else {
                     boton.setText(String.valueOf(mesa.numero));
                     boton.getStyle().set("color", "white");

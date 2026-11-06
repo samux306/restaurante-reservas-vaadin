@@ -42,6 +42,7 @@ public class OcupacionView extends VerticalLayout {
         grid.addColumn(reserva -> reserva.telefono).setHeader("Teléfono");
         grid.addColumn(reserva -> reserva.personas).setHeader("Personas");
         grid.addColumn(reserva -> reserva.confirmada ? "Confirmada" : "Pendiente").setHeader("Estado");
+        grid.setAllRowsVisible(true); // la tabla crece con las filas en vez de tener su propia barra
 
         add(titulo, dpFecha, resumen, grid);
         actualizarOcupacion();

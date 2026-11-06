@@ -4,6 +4,7 @@ import com.restaurante.datos.GestorArchivos;
 import com.restaurante.model.Mesa;
 import com.restaurante.model.Reserva;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -55,7 +56,10 @@ public class ReservasView extends VerticalLayout {
         cmbEstado.setValue("Todas");
         cmbEstado.addValueChangeListener(e -> actualizarGrid());
 
+        btnNueva.addThemeVariants(ButtonVariant.PRIMARY);
+
         HorizontalLayout barra = new HorizontalLayout(btnNueva, txtBuscar, cmbEstado);
+        barra.getStyle().set("flex-wrap", "wrap"); // en el celular bajan a la siguiente linea
 
         // Columnas de la tabla
         grid.addColumn(reserva -> reserva.cliente).setHeader("Cliente");
@@ -67,6 +71,7 @@ public class ReservasView extends VerticalLayout {
         grid.addColumn(reserva -> reserva.numeroMesa).setHeader("Mesa");
         grid.addColumn(reserva -> textoEstado(reserva)).setHeader("Estado");
         grid.addComponentColumn(reserva -> crearBotones(reserva)).setHeader("Acciones");
+        grid.setAllRowsVisible(true); // la tabla crece con las filas en vez de tener su propia barra
 
         add(titulo, barra, grid);
         actualizarGrid();
@@ -210,6 +215,7 @@ public class ReservasView extends VerticalLayout {
                 dialogo.close();
             }
         });
+        btnGuardar.addThemeVariants(ButtonVariant.PRIMARY);
         dialogo.getFooter().add(btnCancelar, btnGuardar);
         dialogo.open();
     }
