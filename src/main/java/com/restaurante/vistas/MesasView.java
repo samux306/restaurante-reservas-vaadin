@@ -126,6 +126,13 @@ public class MesasView extends VerticalLayout {
                 throw new IllegalArgumentException("La columna debe estar entre 1 y " + Mesa.MAX_COLUMNAS);
             }
 
+            // Si la mesa ya tiene reservas, la capacidad no puede quedar menor que el grupo mas grande
+            int mayorGrupo = mayorGrupoDeMesa(numero);
+            if (capacidad < mayorGrupo) {
+                throw new IllegalArgumentException("La mesa " + numero + " tiene una reserva de " + mayorGrupo
+                        + " personas, la capacidad no puede ser menor");
+            }
+
             // Revisa que no se repita el numero ni la posicion con otra mesa
             for (Mesa otra : mesas) {
                 if (otra != mesa && otra.numero == numero) {
@@ -184,6 +191,18 @@ public class MesasView extends VerticalLayout {
         GestorArchivos.guardarMesas(mesas);
         actualizarGrid();
         Notification.show("Mesa " + mesa.numero + " eliminada");
+    }
+
+    // Busca el numero de personas mas grande entre las reservas de una mesa (0 si no tiene)
+    public int mayorGrupoDeMesa(int numeroMesa) {
+        ArrayList<Reserva> reservas = GestorArchivos.leerReservas();
+        int mayor = 0;
+        for (Reserva reserva : reservas) {
+            if (reserva.numeroMesa == numeroMesa && reserva.personas > mayor) {
+                mayor = reserva.personas;
+            }
+        }
+        return mayor;
     }
 
     // Cuenta cuantas reservas tiene una mesa
