@@ -102,12 +102,12 @@ public class GestorArchivos {
             "2|2|Salón|1|2",
             "3|4|Salón|1|3",
             "4|4|Salón|1|4",
-            "5|6|Salón|2|1",
-            "6|4|Salón|2|2",
-            "7|8|Salón|2|4",
-            "8|2|Terraza|3|1",
-            "9|4|Terraza|3|2",
-            "10|6|Terraza|3|4"
+            "5|6|Salón|1|5",
+            "6|4|Salón|2|1",
+            "7|8|Salón|2|2",
+            "8|2|Terraza|2|3",
+            "9|4|Terraza|2|4",
+            "10|6|Terraza|2|5"
         };
         ArrayList<Mesa> mesas = new ArrayList<>();
         for (String linea : lineas) {

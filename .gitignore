@@ -32,6 +32,10 @@ build/
 
 ### VS Code ###
 .vscode/
+# Datos de la aplicacion (se crean solos con datos de ejemplo la primera vez)
+mesas.txt
+reservas.txt
+
 # Vaadin & Frontend
 src/main/frontend/generated/
 /node_modules/
